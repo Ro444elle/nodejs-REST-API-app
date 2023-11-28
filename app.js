@@ -10,7 +10,8 @@ dotenv.config();
 
 require("./middleware/passportConfig.js");
 
-const contactsRouter = require("./routes/api/index.js");
+const contactsRouter = require("./routes/api/contactsRoute.js");
+const usersRouter = require("./routes/api/usersRoute.js");
 const coreOptions = require("./cors");
 
 const app = express();
@@ -21,7 +22,8 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "public/avatars")));
 
-app.use("/", contactsRouter);
+app.use("/contacts", contactsRouter);
+app.use("/users", usersRouter);
 
 app.use((_, res, __) => {
   res.status(404).json({
