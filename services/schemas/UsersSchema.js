@@ -29,6 +29,14 @@ const userSchema = new Schema({
     type: String,
     minLength: 2,
   },
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    required: [true, "Verification token is required"],
+  },
 });
 
 userSchema.methods.generateAuthToken = function () {

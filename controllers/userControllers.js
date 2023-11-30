@@ -7,7 +7,17 @@ require("dotenv").config();
 
 const secret = process.env.SECRET;
 
-const { getAllUsers, createUser, checkUserDB, findUser, logOutUser } = require("../services/usersServices");
+const { nanoid } = require("nanoid");
+
+const {
+  getAllUsers,
+  createUser,
+  checkUserDB,
+  findUser,
+  logOutUser,
+  verifyEmail,
+} = require("../services/usersServices");
+const { sendVerificationEmail } = require("../services/emailServices");
 
 // ************UserControllers************
 const getAllUsersController = async (req, res, next) => {
@@ -223,6 +233,62 @@ const uploadAvatarController = async (req, res, next) => {
   }
 };
 
+const verifyEmailController = async (req, res, next) => {
+  try {
+    const { verificationToken } = req.params;
+    console.log(verificationToken);
+    await verifyEmail(verificationToken);
+
+    res.status(200).json({
+      status: "Success",
+      code: 200,
+      message: "Verification successful",
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "error",
+      code: 404,
+      message: error.message,
+    });
+  }
+};
+
+const generateVerificationToken = () => {
+  return nanoid();
+};
+
+const resendVerificationEmailController = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    if (!email) {
+      return res.status(400).json({ message: "missing required field email" });
+    }
+
+    const user = await findUser({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User does not exist" });
+    }
+    if (user.verify) {
+      return res.status(400).json({ message: "Verification has already been passed" });
+    }
+    console.log(`User verify status: ${user.verify}`);
+    const verificationToken = await generateVerificationToken();
+    console.log(`Generated verification token: ${verificationToken}`);
+    user.verificationToken = verificationToken;
+    await user.save();
+    try {
+      await sendVerificationEmail(verificationToken, email);
+      console.log("Sent verification email");
+    } catch (error) {
+      console.error("Failed to send verification email:", error);
+    }
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred" });
+    console.log(error);
+  }
+};
+
 module.exports = {
   getAllUsersController,
   createUserController,
@@ -230,4 +296,6 @@ module.exports = {
   findUserController,
   logOutController,
   uploadAvatarController,
+  verifyEmailController,
+  resendVerificationEmailController,
 };
