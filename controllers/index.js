@@ -1,331 +1,375 @@
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
+// const Jimp = require("jimp");
+// const fs = require("fs");
+// const path = require("path");
 
-const secret = process.env.SECRET;
+// const jwt = require("jsonwebtoken");
+// require("dotenv").config();
 
-const {
-  getAllContacts,
-  getContactById,
-  removeContact,
-  createContact,
-  updateContact,
-  updateFavoriteContact,
-  getAllUsers,
-  createUser,
-  checkUserDB,
-  findUser,
-  logOutUser,
-} = require("../services/index");
+// const secret = process.env.SECRET;
 
-// ************ContactControllers************
-const getContactsController = async (req, res, next) => {
-  try {
-    const results = await getAllContacts();
-    res.json({
-      status: "Succes",
-      code: 200,
-      data: results,
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: "error",
-      code: 404,
-    });
-    next(error);
-  }
-};
+// const {
+//   // getAllContacts,
+//   // getContactById,
+//   // removeContact,
+//   // createContact,
+//   // updateContact,
+//   // updateFavoriteContact,
+//   getAllUsers,
+//   createUser,
+//   checkUserDB,
+//   findUser,
+//   logOutUser,
+// } = require("../services/index");
 
-const getContactByIdController = async (req, res, next) => {
-  const { contactId } = req.params;
-  try {
-    const result = await getContactById(contactId);
-    if (result) {
-      res.json({
-        status: "Success",
-        code: 200,
-        data: result,
-      });
-    }
-  } catch (error) {
-    res.error(404).json({
-      status: "error",
-      code: 404,
-    });
-    next(error);
-  }
-};
+// // ************ContactControllers************
+// const getContactsController = async (req, res, next) => {
+//   try {
+//     const results = await getAllContacts();
+//     res.json({
+//       status: "Succes",
+//       code: 200,
+//       data: results,
+//     });
+//   } catch (error) {
+//     res.status(404).json({
+//       status: "error",
+//       code: 404,
+//     });
+//     next(error);
+//   }
+// };
 
-const removeContactController = async (req, res, next) => {
-  const { contactId } = req.params;
-  try {
-    const result = await removeContact(contactId);
-    if (result) {
-      res.json({
-        status: "Success",
-        code: 200,
-        message: "Contact deleted",
-      });
-    }
-  } catch (error) {
-    res.status(404).json({
-      status: "error",
-      code: 404,
-      message: "Not found",
-    });
-  }
-};
+// const getContactByIdController = async (req, res, next) => {
+//   const { contactId } = req.params;
+//   try {
+//     const result = await getContactById(contactId);
+//     if (result) {
+//       res.json({
+//         status: "Success",
+//         code: 200,
+//         data: result,
+//       });
+//     }
+//   } catch (error) {
+//     res.error(404).json({
+//       status: "error",
+//       code: 404,
+//     });
+//     next(error);
+//   }
+// };
 
-const createContactController = async (req, res, next) => {
-  try {
-    const { name, email, phone, favorite, age } = req.body;
-    const result = await createContact({
-      name,
-      email,
-      phone,
-      favorite,
-      age,
-    });
+// const removeContactController = async (req, res, next) => {
+//   const { contactId } = req.params;
+//   try {
+//     const result = await removeContact(contactId);
+//     if (result) {
+//       res.json({
+//         status: "Success",
+//         code: 200,
+//         message: "Contact deleted",
+//       });
+//     }
+//   } catch (error) {
+//     res.status(404).json({
+//       status: "error",
+//       code: 404,
+//       message: "Not found",
+//     });
+//   }
+// };
 
-    res.status(201).json({
-      status: "succes",
-      code: 201,
-      data: result,
-    });
-    console.log();
-  } catch (error) {
-    res.status(404).json({
-      status: "error",
-      code: 404,
-    });
-    next(error);
-  }
-};
+// const createContactController = async (req, res, next) => {
+//   try {
+//     const { name, email, phone, favorite, age } = req.body;
+//     const result = await createContact({
+//       name,
+//       email,
+//       phone,
+//       favorite,
+//       age,
+//     });
 
-const updateContactController = async (req, res, next) => {
-  const { contactId } = req.params;
-  const { name, email, phone, age } = req.body;
-  try {
-    const result = await updateContact(contactId, { name, email, phone, age });
-    if (result) {
-      res.status(200).json({
-        status: "Success",
-        code: 200,
-        data: result,
-      });
-    }
-  } catch (error) {
-    res.status(404).json({
-      status: "error",
-      code: 404,
-    });
-  }
-};
+//     res.status(201).json({
+//       status: "succes",
+//       code: 201,
+//       data: result,
+//     });
+//     console.log();
+//   } catch (error) {
+//     res.status(404).json({
+//       status: "error",
+//       code: 404,
+//     });
+//     next(error);
+//   }
+// };
 
-const updateFavoriteContactController = async (req, res, next) => {
-  const { contactId } = req.params;
-  const { favorite } = req.body;
-  try {
-    const result = await updateFavoriteContact(contactId, { favorite });
-    if (result) {
-      res.status(200).json({
-        status: "updated",
-        code: 200,
-        data: result,
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(404).json({
-      status: "error",
-    });
-  }
-};
+// const updateContactController = async (req, res, next) => {
+//   const { contactId } = req.params;
+//   const { name, email, phone, age } = req.body;
+//   try {
+//     const result = await updateContact(contactId, { name, email, phone, age });
+//     if (result) {
+//       res.status(200).json({
+//         status: "Success",
+//         code: 200,
+//         data: result,
+//       });
+//     }
+//   } catch (error) {
+//     res.status(404).json({
+//       status: "error",
+//       code: 404,
+//     });
+//   }
+// };
 
-// ************UserControllers************
-const getAllUsersController = async (req, res, next) => {
-  try {
-    const results = await getAllUsers();
-    res.json({
-      status: "Success",
-      code: 200,
-      data: results,
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: "error",
-      code: 404,
-    });
-    next(error);
-  }
-};
+// const updateFavoriteContactController = async (req, res, next) => {
+//   const { contactId } = req.params;
+//   const { favorite } = req.body;
+//   try {
+//     const result = await updateFavoriteContact(contactId, { favorite });
+//     if (result) {
+//       res.status(200).json({
+//         status: "updated",
+//         code: 200,
+//         data: result,
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.status(404).json({
+//       status: "error",
+//     });
+//   }
+// };
 
-const createUserController = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
+// // ************UserControllers************
+// const getAllUsersController = async (req, res, next) => {
+//   try {
+//     const results = await getAllUsers();
+//     res.json({
+//       status: "Success",
+//       code: 200,
+//       data: results,
+//     });
+//   } catch (error) {
+//     res.status(404).json({
+//       status: "error",
+//       code: 404,
+//     });
+//     next(error);
+//   }
+// };
 
-    if (!email || !password) {
-      return res.status(400).json({
-        status: "error",
-        code: 400,
-        message: "Missing required fields email or password",
-      });
-    }
+// const createUserController = async (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
 
-    const result = await createUser({ email, password });
+//     if (!email || !password) {
+//       return res.status(400).json({
+//         status: "error",
+//         code: 400,
+//         message: "Missing required fields email or password",
+//       });
+//     }
 
-    const payload = { email: result.email };
-    const token = jwt.sign(payload, secret, { expiresIn: "24h" });
+//     const result = await createUser({ email, password });
 
-    res.status(201).json({
-      status: "Success",
-      code: 201,
-      data: { email: result.email, token },
-    });
-  } catch (error) {
-    if (error.message === "This email already exists") {
-      return res.status(409).json({
-        status: "Conflict",
-        code: 409,
-        message: "Email in use",
-      });
-    }
+//     const payload = { email: result.email };
+//     const token = jwt.sign(payload, secret, { expiresIn: "24h" });
 
-    console.error(error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal Server error",
-    });
-  }
-};
+//     res.status(201).json({
+//       status: "Success",
+//       code: 201,
+//       data: { email: result.email, token },
+//     });
+//   } catch (error) {
+//     if (error.message === "This email already exists") {
+//       return res.status(409).json({
+//         status: "Conflict",
+//         code: 409,
+//         message: "Email in use",
+//       });
+//     }
 
-const loginUserController = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
+//     console.error(error);
+//     res.status(500).json({
+//       status: 500,
+//       message: "Internal Server error",
+//     });
+//   }
+// };
 
-    if (!email || !password) {
-      return res.status(400).json({
-        status: "Validation error",
-        code: 400,
-        message: "Missing required fields email or password",
-      });
-    }
+// const loginUserController = async (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
 
-    const result = await checkUserDB({ email, password });
-    const payload = { email: result.email };
-    const token = jwt.sign(payload, secret, { expiresIn: "24h" });
+//     if (!email || !password) {
+//       return res.status(400).json({
+//         status: "Validation error",
+//         code: 400,
+//         message: "Missing required fields email or password",
+//       });
+//     }
 
-    res.status(201).json({
-      status: "Success",
-      code: 201,
-      data: { email: result.email, token },
-    });
-  } catch (error) {
-    if (error.message === "Email or password is wrong") {
-      return res.message(401).json({
-        status: "Unauthorized",
-        code: 401,
-        message: "Email or password is wrong",
-      });
-    }
-    console.error(error);
-    res.status(500).json({
-      code: 500,
-      error: "Internal server error",
-    });
-  }
-};
+//     const result = await checkUserDB({ email, password });
+//     const payload = { email: result.email };
+//     const token = jwt.sign(payload, secret, { expiresIn: "24h" });
 
-const findUserController = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({
-        status: "error",
-        code: 401,
-        message: "Missing Authorization header",
-      });
-    }
+//     res.status(200).json({
+//       status: "Success",
+//       code: 200,
+//       data: { email: result.email, token, subscription: result.subscription },
+//     });
+//   } catch (error) {
+//     if (error.message === "Email or password is wrong") {
+//       return res.message(401).json({
+//         status: "Unauthorized",
+//         code: 401,
+//         message: "Email or password is wrong",
+//       });
+//     }
+//     console.error(error);
+//     res.status(500).json({
+//       code: 500,
+//       error: "Internal server error",
+//     });
+//   }
+// };
 
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({
-        status: "error",
-        code: 401,
-        message: "Missing token",
-      });
-    }
+// const findUserController = async (req, res, next) => {
+//   try {
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader) {
+//       return res.status(401).json({
+//         status: "error",
+//         code: 401,
+//         message: "Missing Authorization header",
+//       });
+//     }
 
-    let tokenDecode;
-    try {
-      tokenDecode = jwt.verify(token, secret);
-      console.log(tokenDecode);
-    } catch (error) {
-      return res.status(401).json({
-        status: "error",
-        code: 401,
-        message: "Invalid token",
-        data: error.message,
-      });
-    }
+//     const token = authHeader.split(" ")[1];
+//     if (!token) {
+//       return res.status(401).json({
+//         status: "error",
+//         code: 401,
+//         message: "Missing token",
+//       });
+//     }
 
-    const result = await findUser({ email: tokenDecode.email });
-    console.log(result);
-    if (result) {
-      res.status(200).json({
-        status: "Success",
-        code: 200,
-        data: {
-          email: result.email,
-          subscription: result.subscription,
-          id: result._id,
-        },
-      });
-    } else {
-      res.status(404).json({
-        status: "error",
-        code: 404,
-        message: "Not authorized",
-      });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+//     let tokenDecode;
+//     try {
+//       tokenDecode = jwt.verify(token, secret);
+//       console.log(tokenDecode);
+//     } catch (error) {
+//       return res.status(401).json({
+//         status: "error",
+//         code: 401,
+//         message: "Invalid token",
+//         data: error.message,
+//       });
+//     }
 
-const logOutController = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
-    const result = await logOutUser(userId);
+//     const result = await findUser({ email: tokenDecode.email });
+//     console.log(result);
+//     if (result) {
+//       res.status(200).json({
+//         status: "Success",
+//         code: 200,
+//         data: {
+//           email: result.email,
+//           subscription: result.subscription,
+//           id: result._id,
+//         },
+//       });
+//     } else {
+//       res.status(404).json({
+//         status: "error",
+//         code: 404,
+//         message: "Not authorized",
+//       });
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
-    if (result.status === "Success") {
-      res.status(204).json({
-        status: "No content",
-        code: 204,
-        message: "User logged out successfully",
-      });
-    } else {
-      res.status(401).json({
-        message: "Not authorized",
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Internal Server error",
-    });
-  }
-};
+// const logOutController = async (req, res, next) => {
+//   try {
+//     const userId = req.user.id;
+//     const result = await logOutUser(userId);
 
-module.exports = {
-  getContactsController,
-  getContactByIdController,
-  removeContactController,
-  createContactController,
-  updateContactController,
-  updateFavoriteContactController,
-  getAllUsersController,
-  createUserController,
-  loginUserController,
-  findUserController,
-  logOutController,
-};
+//     if (result.status === "Success") {
+//       res.status(204).json({
+//         status: "No content",
+//         code: 204,
+//         message: "User logged out successfully",
+//       });
+//     } else {
+//       res.status(401).json({
+//         message: "Not authorized",
+//       });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       message: "Internal Server error",
+//     });
+//   }
+// };
+
+// const uploadAvatarController = async (req, res, next) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(404).json({ error: "File not found" });
+//     }
+
+//     const uniqueFileName = `${req.user._id}-${Date.now()}${path.extname(req.file.originalname)}`;
+
+//     const destinationPath = path.join(__dirname, `../public/avatars/${uniqueFileName}`);
+
+//     await Jimp.read(req.file.path)
+//       .then((image) => {
+//         return image.resize(250, 250).quality(60).greyscale().writeAsync(destinationPath);
+//       })
+//       .then(() => {
+//         fs.unlinkSync(req.file.path);
+//       })
+//       .catch((error) => {
+//         throw error;
+//       });
+
+//     req.user.avatarURL = `avatars/${uniqueFileName}`;
+//     await req.user.save();
+
+//     res.status(200).json({
+//       status: "Success",
+//       code: 200,
+//       avatarURL: req.user.avatarURL,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       status: "error",
+//       code: 500,
+//       message: "Internal server error",
+//     });
+//   }
+// };
+
+// module.exports = {
+//   getContactsController,
+//   getContactByIdController,
+//   removeContactController,
+//   createContactController,
+//   updateContactController,
+//   updateFavoriteContactController,
+//   getAllUsersController,
+//   createUserController,
+//   loginUserController,
+//   findUserController,
+//   logOutController,
+//   uploadAvatarController,
+// };

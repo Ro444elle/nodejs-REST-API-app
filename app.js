@@ -4,11 +4,14 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 
+const path = require("path");
+
 dotenv.config();
 
 require("./middleware/passportConfig.js");
 
-const contactsRouter = require("./routes/api/index.js");
+const contactsRouter = require("./routes/api/contactsRoute.js");
+const usersRouter = require("./routes/api/usersRoute.js");
 const coreOptions = require("./cors");
 
 const app = express();
@@ -17,7 +20,10 @@ app.use(morgan("tiny"));
 app.use(cors(coreOptions));
 app.use(express.json());
 
-app.use("/", contactsRouter);
+app.use(express.static(path.join(__dirname, "public/avatars")));
+
+app.use("/contacts", contactsRouter);
+app.use("/users", usersRouter);
 
 app.use((_, res, __) => {
   res.status(404).json({
@@ -52,3 +58,4 @@ mongoose
   .catch((err) => {
     console.log(`Server is not running.Error:${err.message}`);
   });
+module.exports = app;
