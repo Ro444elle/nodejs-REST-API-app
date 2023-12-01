@@ -278,7 +278,8 @@ const resendVerificationEmailController = async (req, res, next) => {
     user.verificationToken = verificationToken;
     await user.save();
     try {
-      await sendVerificationEmail(verificationToken, email);
+      await sendVerificationEmail(email, verificationToken);
+      res.status(200).json({ message: "Verification email resent" });
       console.log("Sent verification email");
     } catch (error) {
       console.error("Failed to send verification email:", error);
