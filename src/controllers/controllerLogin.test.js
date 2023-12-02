@@ -1,6 +1,6 @@
 const request = require("supertest");
 
-const app = require("./app");
+const app = require("../app");
 
 describe("Login Controller", () => {
   it("should return status code 200, a token, and a user object with email and subscription fields", async () => {
