@@ -30,6 +30,8 @@ const {
   findUserController,
   logOutController,
   uploadAvatarController,
+  verifyEmailController,
+  resendVerificationEmailController,
 } = require("../../controllers/userControllers");
 
 //   ************USERS************
@@ -39,5 +41,7 @@ router.post("/login", loginUserController);
 router.get("/current", auth, findUserController);
 router.get("/logout", auth, logOutController);
 router.patch("/avatar", auth, upload.single("avatar"), uploadAvatarController);
+router.get("/verify/:verificationToken", verifyEmailController);
+router.post("/verify/", resendVerificationEmailController);
 
 module.exports = router;

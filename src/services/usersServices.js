@@ -1,6 +1,15 @@
-const User = require("./schemas/UsersSchema");
+// import { nanoid } from "nanoid";
 
+const User = require("./schemas/UsersSchema");
+// const sgMail = require("@sendgrid/mail");
+const { sendVerificationEmail } = require("./emailServices");
+
+let nanoid;
+import("nanoid").then((module) => {
+  nanoid = module.nanoid;
+});
 // ************USERS************
+
 const getAllUsers = async () => {
   return User.find();
 };
@@ -12,13 +21,17 @@ const createUser = async ({ email, password }) => {
       throw new Error("This email is already in use");
     }
 
-    const newUser = new User({ email, password });
+    const uniqueCodeVerify = nanoid();
 
+    await sendVerificationEmail(email, uniqueCodeVerify);
+
+    const newUser = new User({ email, password, verificationToken: uniqueCodeVerify });
     newUser.setPassword(password);
     newUser.generateAuthToken();
     return await newUser.save();
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 
@@ -65,10 +78,27 @@ const logOutUser = async (userId) => {
   }
 };
 
+const verifyEmail = async (verificationToken) => {
+  const update = { verify: true, verificationToken: null };
+
+  const result = await User.findOneAndUpdate(
+    {
+      verificationToken,
+    },
+    { $set: update },
+    { new: true }
+  );
+  console.log(result);
+  if (!result) {
+    throw new Error("User not found");
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
   checkUserDB,
   findUser,
   logOutUser,
+  verifyEmail,
 };

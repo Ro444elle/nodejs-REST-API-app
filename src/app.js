@@ -3,6 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const sgMail = require("@sendgrid/mail");
 
 const path = require("path");
 
@@ -21,6 +22,8 @@ app.use(cors(coreOptions));
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "public/avatars")));
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 app.use("/contacts", contactsRouter);
 app.use("/users", usersRouter);
